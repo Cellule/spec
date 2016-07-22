@@ -100,6 +100,12 @@
       )
     )
   )
+  (export "data" $data)
+)
+(assert_return (invoke "data") (i32.const 1))
+
+(module
+  (memory 0 1)
 
   ;; Aligned read/write
   (func $aligned (result i32)
@@ -202,7 +208,6 @@
 	(i64.load32_u (i32.const 8))
   )
 
-  (export "data" $data)
   (export "aligned" $aligned)
   (export "unaligned" $unaligned)
   (export "cast" $cast)
@@ -218,7 +223,6 @@
   (export "i64_load32_u" $i64_load32_u)
 )
 
-(assert_return (invoke "data") (i32.const 1))
 (assert_return (invoke "aligned") (i32.const 1))
 (assert_return (invoke "unaligned") (i32.const 1))
 (assert_return (invoke "cast") (f64.const 42.0))
