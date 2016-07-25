@@ -34,3 +34,27 @@
 (assert_trap (invoke "store" (i32.const 0x80000000) (i32.const 13)) "out of bounds memory access")
 (assert_trap (invoke "load" (i32.const 0x80000000)) "out of bounds memory access")
 (assert_trap (invoke "grow_memory" (i32.const 0x80000000)) "memory size exceeds implementation limit")
+
+(module
+    (memory 0 1)
+
+    (export "load" $load)
+    (func $load (param $i i32) (result i32)
+      (i32.load (get_local $i))
+    )
+    
+    (export "store" $store)
+    (func $store (param $i i32) (param $v i32) (result i32)
+      (i32.store (get_local $i) (get_local $v))
+    )
+    
+    (export "grow_memory" $grow_memory)
+    (func $grow_memory (param i32)
+      (grow_memory (get_local 0))
+    )
+)
+
+(assert_trap (invoke "load" (i32.const 0)) "out of bounds memory access")
+(invoke "grow_memory" (i32.const 1)) (i32.const 0)
+(invoke "store" (i32.const 4)) (i32.const -54)
+(assert_return (invoke "load" (i32.const 4)) (i32.const -54))
